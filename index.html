@@ -3,48 +3,42 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Keys Viewer</title>
+<title>Decoded Keys</title>
 <style>
   body {
     font-family: monospace, monospace;
-    background-color: #121212;
+    background: #121212;
     color: #eee;
-    padding: 20px;
+    padding: 2rem;
   }
-  h1 {
-    margin-bottom: 1rem;
-  }
-  #keys {
-    white-space: pre-wrap;
-    line-height: 1.5;
+  pre {
     background: #222;
-    padding: 15px;
+    padding: 1rem;
     border-radius: 8px;
-    user-select: all;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 </style>
 </head>
 <body>
-<h1>Keys List</h1>
-<div id="keys">Loading keys...</div>
+<h1>Your Keys</h1>
+<pre id="keys">Loading keys...</pre>
 
 <script>
-async function loadKeys() {
+// Base64 encoded keys string (replace this string with your actual base64 string)
+const base64Keys = "WFFXQUJU..."
+
+function decodeKeys(b64) {
   try {
-    const response = await fetch('keys.txt');
-    if (!response.ok) throw new Error('Failed to fetch keys.txt');
-
-    const base64Text = (await response.text()).trim();
-    const jsonString = atob(base64Text);
-    const keys = JSON.parse(jsonString);
-
-    document.getElementById('keys').textContent = keys.join('\n');
-  } catch (error) {
-    document.getElementById('keys').textContent = 'Error loading keys: ' + error.message;
+    // Decode base64 string to plain text keys
+    const decoded = atob(b64);
+    return decoded.trim();
+  } catch (e) {
+    return "Error decoding keys.";
   }
 }
 
-loadKeys();
+document.getElementById("keys").textContent = decodeKeys(base64Keys);
 </script>
 </body>
 </html>
