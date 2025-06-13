@@ -1,73 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Your Key</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      flex-direction: column;
-    }
-    .key-box {
-      background: #1e1e1e;
-      padding: 20px 30px;
-      border-radius: 10px;
-      font-size: 1.2em;
-      box-shadow: 0 0 10px #00ffcc;
-    }
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      background: #00ffcc;
-      color: #000;
-      font-weight: bold;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-  <div class="key-box" id="key">Loading your key...</div>
-  <button onclick="copyKey()">Copy Key</button>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Key</title>
+  </head>
+  <body>
+    <pre id="key">Loading...</pre>
 
-  <script>
-    async function getKey() {
-      try {
-        const res = await fetch('https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt');
-        const text = await res.text();
-
-        // Convert to a JavaScript array by cleaning the text
-        const keyArray = text
-          .replace(/[\{\}"]/g, '')         // remove braces and quotes
-          .split(',')
-          .map(k => k.trim())              // trim whitespace
-          .filter(k => k.length > 0);      // remove empty entries
-
-        const randomKey = keyArray[Math.floor(Math.random() * keyArray.length)];
-        document.getElementById('key').textContent = randomKey;
-      } catch (err) {
-        document.getElementById('key').textContent = 'Failed to load key.';
-        console.error(err);
-      }
-    }
-
-    function copyKey() {
-      const key = document.getElementById('key').textContent;
-      navigator.clipboard.writeText(key).then(() => {
-        alert('Key copied to clipboard!');
-      });
-    }
-
-    getKey();
-  </script>
-</body>
+    <script>
+      fetch("https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt")
+        .then(res => res.text())
+        .then(data => {
+          const keys = data
+            .replace(/[{}"]/g, "")
+            .split(",")
+            .map(k => k.trim())
+            .filter(Boolean);
+          const randomKey = keys[Math.floor(Math.random() * keys.length)];
+          document.body.innerText = randomKey;
+        })
+        .catch(() => {
+          document.body.innerText = "Error loading key.";
+        });
+    </script>
+  </body>
 </html>
