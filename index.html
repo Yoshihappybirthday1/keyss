@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Key Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Locked Key Viewer</title>
   <style>
     body {
       background-color: #121212;
@@ -20,49 +20,52 @@
       margin-bottom: 1rem;
     }
     #key {
-      font-size: 1.5rem;
-      padding: 0.8rem 1.5rem;
+      font-size: 1.8rem;
+      padding: 1rem 2rem;
       background: #333;
       border-radius: 10px;
       user-select: all;
+      max-width: 90vw;
+      word-break: break-word;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <h1>Your Key</h1>
+  <h1>Your Locked Key</h1>
   <div id="key">Loading...</div>
 
   <script>
-    const storedKey = localStorage.getItem("lockedKey");
+    const STORAGE_KEY = "lockedKey";
 
-    if (storedKey) {
-      document.getElementById("key").textContent = storedKey;
+    // Show key from localStorage if available
+    const savedKey = localStorage.getItem(STORAGE_KEY);
+    if (savedKey) {
+      document.getElementById("key").textContent = savedKey;
     } else {
+      // Fetch keys.txt and pick random key
       fetch("https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt")
-        .then(res => res.text())
+        .then(response => response.text())
         .then(text => {
-          const lines = text.split('\n')
-            .map(l => l.trim())
-            .filter(l => /^[A-Za-z0-9+/=]+$/.test(l)); // valid base64 only
+          // Split by line, trim whitespace, filter out empty lines
+          const keys = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
 
-          const decoded = lines.map(line => {
-            try {
-              return atob(line);
-            } catch {
-              return null;
-            }
-          }).filter(Boolean);
-
-          const randomKey = decoded[Math.floor(Math.random() * decoded.length)];
-          if (randomKey) {
-            localStorage.setItem("lockedKey", randomKey);
-            document.getElementById("key").textContent = randomKey;
-          } else {
-            document.getElementById("key").textContent = "No valid keys found.";
+          if (keys.length === 0) {
+            document.getElementById("key").textContent = "No keys found.";
+            return;
           }
+
+          // Pick random key
+          const randomKey = keys[Math.floor(Math.random() * keys.length)];
+
+          // Save to localStorage
+          localStorage.setItem(STORAGE_KEY, randomKey);
+
+          // Show key
+          document.getElementById("key").textContent = randomKey;
         })
         .catch(err => {
-          document.getElementById("key").textContent = "Error loading keys.";
+          document.getElementById("key").textContent = "Failed to load keys.";
           console.error(err);
         });
     }
