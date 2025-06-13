@@ -1,65 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Random Key</title>
-<style>
-  body {
-    font-family: monospace, monospace;
-    background: #121212;
-    color: #eee;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    margin: 0;
-  }
-  h1 {
-    margin-bottom: 1rem;
-  }
-  #key {
-    font-size: 2rem;
-    font-weight: bold;
-    background: #333;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    user-select: all;
-    min-width: 300px;
-    text-align: center;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Random Key Display</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      background: #121212;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    #key {
+      font-size: 2rem;
+      font-weight: bold;
+      background: #333;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      user-select: all;
+    }
+  </style>
 </head>
 <body>
-<h1>Your Random Key</h1>
-<div id="key">Loading...</div>
+  <h1>Your Random Key</h1>
+  <div id="key">Loading...</div>
 
-<script>
-(async () => {
-  const keysURL = "https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt";
-  try {
-    const response = await fetch(keysURL);
-    if (!response.ok) throw new Error("Failed to fetch keys");
-    const text = await response.text();
+  <script>
+    (async () => {
+      const keysURL = "https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt";
+      const storageKey = "selectedKey";
 
-    // Split text into lines, trim and filter out empty lines
-    const keys = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+      // Check if key is already stored
+      let storedKey = localStorage.getItem(storageKey);
+      if (storedKey) {
+        document.getElementById('key').textContent = storedKey;
+        return;
+      }
 
-    if (keys.length === 0) {
-      document.getElementById('key').textContent = "No keys found.";
-      return;
-    }
+      try {
+        const response = await fetch(keysURL);
+        if (!response.ok) throw new Error("Failed to fetch keys");
+        const text = await response.text();
 
-    // Pick a random key
-    const randomKey = keys[Math.floor(Math.random() * keys.length)];
-    document.getElementById('key').textContent = randomKey;
+        // Parse keys by splitting lines, trimming whitespace, filtering empty lines
+        const keys = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+        if (keys.length === 0) {
+          document.getElementById('key').textContent = "No keys found.";
+          return;
+        }
 
-  } catch (err) {
-    document.getElementById('key').textContent = "Error loading keys.";
-    console.error(err);
-  }
-})();
-</script>
+        const randomKey = keys[Math.floor(Math.random() * keys.length)];
+        document.getElementById('key').textContent = randomKey;
+
+        // Save selected key to localStorage
+        localStorage.setItem(storageKey, randomKey);
+
+      } catch (err) {
+        document.getElementById('key').textContent = "Error loading keys.";
+        console.error(err);
+      }
+    })();
+  </script>
 </body>
 </html>
