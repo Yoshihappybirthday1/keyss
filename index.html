@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Random Key Viewer</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Key Viewer</title>
   <style>
     body {
-      font-family: sans-serif;
-      background: #121212;
+      background-color: #121212;
       color: #eee;
+      font-family: monospace;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -19,11 +20,10 @@
       margin-bottom: 1rem;
     }
     #key {
-      font-size: 2rem;
-      font-weight: bold;
+      font-size: 1.5rem;
+      padding: 0.8rem 1.5rem;
       background: #333;
-      padding: 1rem 2rem;
-      border-radius: 8px;
+      border-radius: 10px;
       user-select: all;
     }
   </style>
@@ -33,38 +33,28 @@
   <div id="key">Loading...</div>
 
   <script>
-    async function fetchAndShowKey() {
-      try {
-        const res = await fetch('keys.txt');
-        const text = await res.text();
-
+    fetch("https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt")
+      .then(res => res.text())
+      .then(text => {
         const lines = text.split('\n')
-          .map(line => line.trim())
-          .filter(line =>
-            /^[A-Za-z0-9+/=]+$/.test(line) &&
-            line.length % 4 === 0
-          );
+          .map(l => l.trim())
+          .filter(l => /^[A-Za-z0-9+/=]+$/.test(l)); // Keep only valid base64
 
         const decoded = lines.map(line => {
           try {
             return atob(line);
-          } catch (e) {
+          } catch {
             return null;
           }
-        }).filter(k => k && k.length > 10); // Filter short/broken keys
+        }).filter(Boolean);
 
-        if (decoded.length === 0) throw new Error("No valid keys");
-
-        const random = decoded[Math.floor(Math.random() * decoded.length)];
-        document.getElementById('key').textContent = random;
-
-      } catch (e) {
-        document.getElementById('key').textContent = "Error decoding keys.";
-        console.error(e);
-      }
-    }
-
-    fetchAndShowKey();
+        const randomKey = decoded[Math.floor(Math.random() * decoded.length)];
+        document.getElementById("key").textContent = randomKey || "No valid keys found.";
+      })
+      .catch(err => {
+        document.getElementById("key").textContent = "Error loading keys.";
+        console.error(err);
+      });
   </script>
 </body>
 </html>
