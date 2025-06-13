@@ -37,17 +37,11 @@
     fetch("https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt")
       .then(res => res.text())
       .then(text => {
-        // Clean text: remove braces and quotes, split by comma, trim whitespace
-        const keys = text
-          .replace(/[{}"]/g, '')
-          .split(',')
-          .map(k => k.trim())
-          .filter(k => k.length > 0);
-
-        // Pick random key
+        const keys = text.match(/[A-Z0-9]{15}/g);
+        if (!keys || keys.length === 0) {
+          throw new Error("No keys found");
+        }
         const randomKey = keys[Math.floor(Math.random() * keys.length)];
-
-        // Display it
         document.getElementById('key').textContent = randomKey;
       })
       .catch(err => {
