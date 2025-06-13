@@ -29,32 +29,43 @@
   </style>
 </head>
 <body>
-  <h1>Your Random Key</h1>
+  <h1>Your Key</h1>
   <div id="key">Loading...</div>
 
   <script>
-    fetch("https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt")
-      .then(res => res.text())
-      .then(text => {
-        const lines = text.split('\n')
-          .map(l => l.trim())
-          .filter(l => /^[A-Za-z0-9+/=]+$/.test(l)); // Keep only valid base64
+    const storedKey = localStorage.getItem("lockedKey");
 
-        const decoded = lines.map(line => {
-          try {
-            return atob(line);
-          } catch {
-            return null;
+    if (storedKey) {
+      document.getElementById("key").textContent = storedKey;
+    } else {
+      fetch("https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt")
+        .then(res => res.text())
+        .then(text => {
+          const lines = text.split('\n')
+            .map(l => l.trim())
+            .filter(l => /^[A-Za-z0-9+/=]+$/.test(l)); // valid base64 only
+
+          const decoded = lines.map(line => {
+            try {
+              return atob(line);
+            } catch {
+              return null;
+            }
+          }).filter(Boolean);
+
+          const randomKey = decoded[Math.floor(Math.random() * decoded.length)];
+          if (randomKey) {
+            localStorage.setItem("lockedKey", randomKey);
+            document.getElementById("key").textContent = randomKey;
+          } else {
+            document.getElementById("key").textContent = "No valid keys found.";
           }
-        }).filter(Boolean);
-
-        const randomKey = decoded[Math.floor(Math.random() * decoded.length)];
-        document.getElementById("key").textContent = randomKey || "No valid keys found.";
-      })
-      .catch(err => {
-        document.getElementById("key").textContent = "Error loading keys.";
-        console.error(err);
-      });
+        })
+        .catch(err => {
+          document.getElementById("key").textContent = "Error loading keys.";
+          console.error(err);
+        });
+    }
   </script>
 </body>
 </html>
