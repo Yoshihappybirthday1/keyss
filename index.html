@@ -33,37 +33,37 @@
   <div id="key">Loading...</div>
 
   <script>
-    async function fetchAndDecodeKeys() {
+    async function fetchAndShowRandomKey() {
       try {
         const response = await fetch('keys.txt');
         const text = await response.text();
+
         const lines = text.trim().split('\n');
 
-        // Filter out invalid lines
         const base64Lines = lines.filter(line =>
-          /^[A-Za-z0-9+/=]+$/.test(line) && line.length % 4 === 0
+          /^[A-Za-z0-9+/=]+$/.test(line.trim()) && line.trim().length % 4 === 0
         );
-
-        if (base64Lines.length === 0) throw new Error("No valid keys found.");
 
         const decodedKeys = base64Lines.map(line => {
           try {
-            return atob(line);
-          } catch (err) {
+            return atob(line.trim());
+          } catch {
             return null;
           }
         }).filter(Boolean);
 
+        if (decodedKeys.length === 0) throw new Error("No valid keys found");
+
         const randomKey = decodedKeys[Math.floor(Math.random() * decodedKeys.length)];
-        document.getElementById('key').textContent = randomKey || "No decoded key found.";
+        document.getElementById('key').textContent = randomKey;
 
       } catch (err) {
-        document.getElementById('key').textContent = "Error decoding keys";
         console.error(err);
+        document.getElementById('key').textContent = "Error decoding keys.";
       }
     }
 
-    fetchAndDecodeKeys();
+    fetchAndShowRandomKey();
   </script>
 </body>
 </html>
