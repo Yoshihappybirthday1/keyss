@@ -6,7 +6,7 @@
 <title>Random Key</title>
 <style>
   body {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-family: monospace, monospace;
     background: #121212;
     color: #eee;
     display: flex;
@@ -26,31 +26,40 @@
     padding: 1rem 2rem;
     border-radius: 8px;
     user-select: all;
+    min-width: 300px;
+    text-align: center;
   }
 </style>
 </head>
 <body>
-  <h1>Your Random Key</h1>
-  <div id="key">Loading...</div>
+<h1>Your Random Key</h1>
+<div id="key">Loading...</div>
 
-  <script>
-    fetch("https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt")
-      .then(res => res.text())
-      .then(data => {
-        // Split the file content by newlines, filter out empty lines
-        const keys = data.split('\n').map(k => k.trim()).filter(k => k.length > 0);
-        if (keys.length === 0) {
-          document.getElementById('key').textContent = "No keys found.";
-          return;
-        }
-        // Pick random key
-        const randomKey = keys[Math.floor(Math.random() * keys.length)];
-        document.getElementById('key').textContent = randomKey;
-      })
-      .catch(err => {
-        console.error("Error loading keys:", err);
-        document.getElementById('key').textContent = "Failed to load keys.";
-      });
-  </script>
+<script>
+(async () => {
+  const keysURL = "https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt";
+  try {
+    const response = await fetch(keysURL);
+    if (!response.ok) throw new Error("Failed to fetch keys");
+    const text = await response.text();
+
+    // Split text into lines, trim and filter out empty lines
+    const keys = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+
+    if (keys.length === 0) {
+      document.getElementById('key').textContent = "No keys found.";
+      return;
+    }
+
+    // Pick a random key
+    const randomKey = keys[Math.floor(Math.random() * keys.length)];
+    document.getElementById('key').textContent = randomKey;
+
+  } catch (err) {
+    document.getElementById('key').textContent = "Error loading keys.";
+    console.error(err);
+  }
+})();
+</script>
 </body>
 </html>
