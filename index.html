@@ -33,37 +33,38 @@
   <div id="key">Loading...</div>
 
   <script>
-    async function fetchAndShowRandomKey() {
+    async function fetchAndShowKey() {
       try {
-        const response = await fetch('keys.txt');
-        const text = await response.text();
+        const res = await fetch('keys.txt');
+        const text = await res.text();
 
-        const lines = text.trim().split('\n');
+        const lines = text.split('\n')
+          .map(line => line.trim())
+          .filter(line =>
+            /^[A-Za-z0-9+/=]+$/.test(line) &&
+            line.length % 4 === 0
+          );
 
-        const base64Lines = lines.filter(line =>
-          /^[A-Za-z0-9+/=]+$/.test(line.trim()) && line.trim().length % 4 === 0
-        );
-
-        const decodedKeys = base64Lines.map(line => {
+        const decoded = lines.map(line => {
           try {
-            return atob(line.trim());
-          } catch {
+            return atob(line);
+          } catch (e) {
             return null;
           }
-        }).filter(Boolean);
+        }).filter(k => k && k.length > 10); // Filter short/broken keys
 
-        if (decodedKeys.length === 0) throw new Error("No valid keys found");
+        if (decoded.length === 0) throw new Error("No valid keys");
 
-        const randomKey = decodedKeys[Math.floor(Math.random() * decodedKeys.length)];
-        document.getElementById('key').textContent = randomKey;
+        const random = decoded[Math.floor(Math.random() * decoded.length)];
+        document.getElementById('key').textContent = random;
 
-      } catch (err) {
-        console.error(err);
+      } catch (e) {
         document.getElementById('key').textContent = "Error decoding keys.";
+        console.error(e);
       }
     }
 
-    fetchAndShowRandomKey();
+    fetchAndShowKey();
   </script>
 </body>
 </html>
