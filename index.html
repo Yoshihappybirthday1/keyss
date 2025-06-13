@@ -1,34 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Random Key Picker</title>
-<style>
-  body { font-family: Arial, sans-serif; background: #121212; color: #eee; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-  h1 { margin-bottom: 1rem; }
-  #key { font-size: 2rem; font-weight: bold; background: #333; padding: 1rem 2rem; border-radius: 8px; user-select: all; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Key</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+    }
+    .key-box {
+      background: #1e1e1e;
+      padding: 20px 30px;
+      border-radius: 10px;
+      font-size: 1.2em;
+      box-shadow: 0 0 10px #00ffcc;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      background: #00ffcc;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-<h1>Your Random Key</h1>
-<div id="key">Loading...</div>
+  <div class="key-box" id="key">Loading your key...</div>
+  <button onclick="copyKey()">Copy Key</button>
 
-<script>
-  const keysUrl = "https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt";
+  <script>
+    async function getKey() {
+      try {
+        const res = await fetch('https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt');
+        const text = await res.text();
 
-  fetch(keysUrl)
-    .then(response => response.text())
-    .then(text => {
-      // Split keys by newline and filter out empty lines
-      const keys = text.split('\n').map(k => k.trim()).filter(k => k.length > 0);
-      const randomKey = keys[Math.floor(Math.random() * keys.length)];
-      document.getElementById('key').textContent = randomKey;
-    })
-    .catch(err => {
-      document.getElementById('key').textContent = 'Failed to load keys.';
-      console.error(err);
-    });
-</script>
+        // Convert to a JavaScript array by cleaning the text
+        const keyArray = text
+          .replace(/[\{\}"]/g, '')         // remove braces and quotes
+          .split(',')
+          .map(k => k.trim())              // trim whitespace
+          .filter(k => k.length > 0);      // remove empty entries
+
+        const randomKey = keyArray[Math.floor(Math.random() * keyArray.length)];
+        document.getElementById('key').textContent = randomKey;
+      } catch (err) {
+        document.getElementById('key').textContent = 'Failed to load key.';
+        console.error(err);
+      }
+    }
+
+    function copyKey() {
+      const key = document.getElementById('key').textContent;
+      navigator.clipboard.writeText(key).then(() => {
+        alert('Key copied to clipboard!');
+      });
+    }
+
+    getKey();
+  </script>
 </body>
 </html>
