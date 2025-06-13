@@ -3,42 +3,56 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Decoded Keys</title>
+<title>View Keys</title>
 <style>
   body {
     font-family: monospace, monospace;
     background: #121212;
     color: #eee;
-    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    margin: 2rem;
   }
-  pre {
-    background: #222;
-    padding: 1rem;
+  h1 {
+    margin-bottom: 1rem;
+  }
+  #keys {
+    white-space: pre-line;
+    font-size: 1.1rem;
+    background: #333;
+    padding: 1rem 2rem;
     border-radius: 8px;
-    white-space: pre-wrap;
-    word-break: break-word;
+    width: 100%;
+    max-width: 600px;
+    user-select: all;
+    overflow-wrap: break-word;
   }
 </style>
 </head>
 <body>
-<h1>Your Keys</h1>
-<pre id="keys">Loading keys...</pre>
+<h1>Available Keys</h1>
+<div id="keys">Loading...</div>
 
 <script>
-// Base64 encoded keys string (replace this string with your actual base64 string)
-const base64Keys = "WFFXQUJU..."
+  // Base64 encoded keys only (no extra code), no line breaks
+  const base64Keys = "WFFXQUJUTlpLRDgzNzEyTQpMUUZUWUpIR01XWjI0OTgzClpLUEpSTEFNTkI0Mjg3NkQKREFCWFtLVVpRTVRZNjUxOTIKTkhXWktZTUtUQ0pFNDM4NjdHCkdKTExNWVFQQUtCMzgzOTEwClRXWE1HS0RaSk5INDMxNjgKQlpBSE5ZUUxEWDM4MjE5CktNV1JQTFpYVEhPODQzOTcKRlpxV01ZWEtOREw4MjM1MQpVWFRLSkFPQlJNNDcyOTYKTVF6R0hZQlJLTEE4MzkxNApWQ0pNV1BIVEQ3NjIwMwpSTFRBWU1HW1FKOTUwMjgKUFlUWldOUlFYTUExNTg2OQpNV1pMSlRQWEdLUzIwMDk4CkJYWktaWUFKSEdUNzM5NTIKSFdNS1lRSlBCTjg0MjYwCkRaQkpLWExNWVEzODE5NQpUUEpabUJLS0hBUjk0Mjc2Ck5SWktZV0pQVlQzMDU4OQpHUUxXWktCSFlYVDgzMTI3CldYWkpLQkxZVFJNOTI2MDMKWUtaVFdYSEpNQkE0NTEyOQpMWlhQWU1SVEdLSjgwMzQyCk1HV1pLVFhSUVJZOTQyODUKUVpLWU1KQkFMWFR3NTgzMApKWE1UVWlaTFFLSDI0OTc2ClpRWVdKUFhLUlE1ODAxMwoKVEtRV1pZR0hNQjMwMTQ5CktaTFBYVFJKV001MDgyNwpYWktaV1BNVFJZMTMxMzk0Ck1KWEpSWlBUR1lIODQyNzAKClRLUFlEWVJKV0IxNzAxNgpMV0JWUFlKS1hSVDQ5MjMwCllXTVpSWFBUV0o4MTQ5NQpQV1pNWVhKVEtCSjkyMzYwCk1ZVEtKUFpYV1JCNjA5NDIKClpXWVBSSFRYS01CSjM1MTc4CkhSWWJaTVdKS1RQOTg0MTMKClRQS1dSTUJZWFo3NDI5MApQTVdUWktYQlJZMTgzNjQKWVpQS01CV1RLUlh5NzAyMQpLWU1aUlRQV1hCNjA0MDMKCldCSk1YWlJZUFBLNzIxODYKClFLSlRXWk1QWVJCOTkwNDgKVFprV1lUTUJKUjg5NTMxCk1USktYUlBXXFpZMjQwNjcKClBLSVpZTltCUlRYMzA4OTUKClpNWFJZVEtQV0JKMTY3NDIKClRNV1BYWktZSlI5NTA4MwoKV1pUSlBSTVlaS0IzMDI2NApZTVpSVEtYSkJKUDg3MTA5CgpVWUtQTVJUTVhQUjYzMDQyClRQTU1YQllSWkpXOTg0MDEKCltaUlBNWVdKQlRYODIzNDcKCldCS1BYWlRZTlJYNzYyMDgKClJZV1hLS1RQWkJNOTE1MzQKClpKS1hQWVdNVEJMMjA5NjcKClhKVFdQQllSTUpLNTM2NDAKCllQUlpLTE1YVFdYQlQ4NzEzMg==";
 
-function decodeKeys(b64) {
   try {
-    // Decode base64 string to plain text keys
-    const decoded = atob(b64);
-    return decoded.trim();
-  } catch (e) {
-    return "Error decoding keys.";
-  }
-}
+    // Decode base64 string to normal text
+    const decodedKeysText = atob(base64Keys);
 
-document.getElementById("keys").textContent = decodeKeys(base64Keys);
+    // Split keys by new line into array
+    const keysArray = decodedKeysText.trim().split('\n');
+
+    // Join keys with newline for display
+    document.getElementById('keys').textContent = keysArray.join('\n');
+  } catch (e) {
+    document.getElementById('keys').textContent = "Error decoding keys.";
+    console.error("Decoding error:", e);
+  }
 </script>
 </body>
 </html>
