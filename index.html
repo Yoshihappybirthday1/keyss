@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Single Decoded Key</title>
+  <title>Your Authorized Key</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -22,10 +22,12 @@
 </head>
 <body>
 
-<h1>Authorized Key</h1>
-<div id="key">Loading key...</div>
+<h1>🔑 Your Authorized Key</h1>
+<div id="key">Loading your key...</div>
 
 <script>
+  const STORAGE_KEY = 'lockedDecodedKey';
+
   function base64DecodeUnicode(str) {
     try {
       return decodeURIComponent(
@@ -39,30 +41,43 @@
     }
   }
 
-  async function loadFirstDecodedKey() {
-    const container = document.getElementById('key');
+  async function loadLockedKey() {
+    const display = document.getElementById('key');
+    
+    // Check if user already has a locked key
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      display.textContent = stored;
+      return;
+    }
+
     try {
       const res = await fetch('https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt');
       if (!res.ok) throw new Error('Failed to fetch keys.txt');
 
-      const raw = await res.text();
-      const lines = raw.split('\n').map(l => l.trim()).filter(Boolean);
+      const text = await res.text();
+      const lines = text.split('\n').map(line => line.trim()).filter(Boolean);
 
-      for (const line of lines) {
-        const decoded = base64DecodeUnicode(line);
-        if (decoded) {
-          container.textContent = decoded;
-          return;
-        }
+      // Decode all valid base64 lines
+      const validDecodedKeys = lines
+        .map(base64DecodeUnicode)
+        .filter(decoded => decoded && decoded.length > 0);
+
+      if (validDecodedKeys.length === 0) {
+        display.textContent = '[No valid keys found]';
+        return;
       }
 
-      container.textContent = '[No valid base64 keys found]';
+      // Pick random and lock it
+      const randomKey = validDecodedKeys[Math.floor(Math.random() * validDecodedKeys.length)];
+      localStorage.setItem(STORAGE_KEY, randomKey);
+      display.textContent = randomKey;
     } catch (err) {
-      container.textContent = 'Error: ' + err.message;
+      display.textContent = 'Error: ' + err.message;
     }
   }
 
-  loadFirstDecodedKey();
+  loadLockedKey();
 </script>
 
 </body>
