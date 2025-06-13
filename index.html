@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Random Key Loader</title>
+<title>Random Key</title>
 <style>
   body {
-    font-family: sans-serif;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     background: #121212;
     color: #eee;
     display: flex;
@@ -36,17 +36,20 @@
   <script>
     fetch("https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt")
       .then(res => res.text())
-      .then(text => {
-        const keys = text.match(/[A-Z0-9]{15}/g);
-        if (!keys || keys.length === 0) {
-          throw new Error("No keys found");
+      .then(data => {
+        // Split the file content by newlines, filter out empty lines
+        const keys = data.split('\n').map(k => k.trim()).filter(k => k.length > 0);
+        if (keys.length === 0) {
+          document.getElementById('key').textContent = "No keys found.";
+          return;
         }
+        // Pick random key
         const randomKey = keys[Math.floor(Math.random() * keys.length)];
         document.getElementById('key').textContent = randomKey;
       })
       .catch(err => {
-        console.error("Failed to load keys:", err);
-        document.getElementById('key').textContent = "Failed to load keys";
+        console.error("Error loading keys:", err);
+        document.getElementById('key').textContent = "Failed to load keys.";
       });
   </script>
 </body>
