@@ -3,11 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Random Key Display</title>
+  <title>Your Key</title>
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      font-family: sans-serif;
       background: #121212;
       color: #eee;
       display: flex;
@@ -31,44 +30,123 @@
   </style>
 </head>
 <body>
-  <h1>Your Random Key</h1>
+  <h1>Your Key</h1>
   <div id="key">Loading...</div>
 
   <script>
-    (async () => {
-      const keysURL = "https://raw.githubusercontent.com/Yoshihappybirthday1/keyss/main/keys.txt";
-      const storageKey = "selectedKey";
+    // Paste your keys here as strings in this array
+    const keys = [
+      "XQWABTNZKD83712M",
+      "LQFTYJHGMWZ24983",
+      "ZKPJRLAMNB42876D",
+      "DABXKUZQMTY65192",
+      "NHWZKYMTCJE43867",
+      "GJLMYVQKABR83910",
+      "TWXMGKDZJNH43168",
+      "BZAHNYQKLDX38219",
+      "KMWRPLZXTHO84397",
+      "FZQWMYXKNDL82351",
+      "UXTKCJAOBRM47296",
+      "MQZGHYBRKLA83914",
+      "VCJMWPBXTDQ76203",
+      "RLTAYMGKZQJ95028",
+      "PYTZWNRQXMA15869",
+      "MWZLJTPXGKR32098",
+      "BXZKMYAJHGT73952",
+      "HWMKYQJPBZ84260",
+      "DZABJKXLMYQ38195",
+      "TPJZMBYKHAR92476",
+      "NRZKYWJPVQT30589",
+      "GQLWZBKYHXT83127",
+      "WXZJKBLYTRM92603",
+      "YKZTWXHJMBA45129",
+      "LZXPYMRTGKJ80342",
+      "MGWZKTXRQJY94285",
+      "QZKYMJBALXT75830",
+      "JXMTWYZLQKH24976",
+      "ZQYMWJPXKRA58013",
+      "TKQWZYXGHMB30149",
+      "KZLPXYTRJWM40827",
+      "XBKZWPMRTYJ91326",
+      "HJYBZKTPMWQ74085",
+      "VZMJRTXQKYP69204",
+      "QKZWPMYBXTR31890",
+      "KTWJZMPYXRA50823",
+      "LXYMJQWTZRB29710",
+      "ZMJXRYKQWTP60948",
+      "RMYXPZWTBKJ41832",
+      "BZMWXTKJYAR95076",
+      "ZPKLMTXBYWQ47289",
+      "GWRZTPKJYMX83041",
+      "JKWTZRXMPBY61420",
+      "XZMYTKRPJBW70853",
+      "KZBXTPWRJYM93184",
+      "LMWYTZPBJXK20975",
+      "WMKJPTZYXBR50368",
+      "ZMXKWBYTJRP14820",
+      "KPYBZWRXJTM96341",
+      "MJXWRZPTKBY84270",
+      "TKPZMYRJWBX30816",
+      "LWBZPYJKXRT49230",
+      "YWMZRXPBTKJ81495",
+      "PWZMYXJTKRB92360",
+      "MYTKJPZXWRB60942",
+      "ZWYPRTXKMBJ35178",
+      "XRYBZMWJKTP98413",
+      "TPJKWRMBYXZ74290",
+      "PMWTZKXBRJY18364",
+      "YZPJMBWTKRX97021",
+      "KYMZRTPWXBJ58403",
+      "WBJMXZRYPTK72186",
+      "QKJTWZMPYRB39048",
+      "XZWYTPMBJRK89531",
+      "MTJKXRPWZYB24067",
+      "JPKYZMBRTXW30895",
+      "ZMXRYTKPWBJ16742",
+      "TMWPZXBKYJR95083",
+      "WZTJPRMYXKB30264",
+      "YMZRTKXJBWP87109",
+      "ZYWKPMRTXJB63042",
+      "TPMXKBYZRJW98401",
+      "KZRPMYWJBTX82347",
+      "MZXTPKYRWJB10496",
+      "WBKPXZTYMRJ76208",
+      "RYWXKJTPZBM91534",
+      "ZJKXPYWMTRB20967",
+      "XZTWPBYRMJK53640",
+      "YPRZKMJWXBT87132",
+      "ZRTWKYJPBMX43085",
+      "JTKZBMYXPRW19604",
+      "KMPZWRYBXJT82059",
+      "MTXKWBJYPRZ61430",
+      "WZJTXBPMYRK30852",
+      "PKYRWJTXZMB94306",
+      "ZXWRBPMTYKJ56028",
+      "KPYTWXMRBZJ13794",
+      "YJKMPXZTWBR84160",
+      "XRMBTZJKWYP95073",
+      "TKJPWRMXYZB31426",
+      "ZWRPJKYTXMB80291",
+      "WBYTXMRZPKJ49063",
+      "MJKZTPYWBRX23678",
+      "RZBXYJTWPKM89014",
+      "PYWZTXKJMBR50862",
+      "XWJZRTMBPKY19487",
+      "ZMYKPBTJXWR43091",
+      "MTJZXKYRPWB85206"
+    ];
 
-      // Check if key is already stored
-      let storedKey = localStorage.getItem(storageKey);
-      if (storedKey) {
-        document.getElementById('key').textContent = storedKey;
-        return;
-      }
+    // Try to get saved key from localStorage
+    let savedKey = localStorage.getItem("selectedKey");
 
-      try {
-        const response = await fetch(keysURL);
-        if (!response.ok) throw new Error("Failed to fetch keys");
-        const text = await response.text();
+    // If no saved key, pick one randomly and save it
+    if (!savedKey) {
+      savedKey = keys[Math.floor(Math.random() * keys.length)];
+      localStorage.setItem("selectedKey", savedKey);
+    }
 
-        // Parse keys by splitting lines, trimming whitespace, filtering empty lines
-        const keys = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-        if (keys.length === 0) {
-          document.getElementById('key').textContent = "No keys found.";
-          return;
-        }
-
-        const randomKey = keys[Math.floor(Math.random() * keys.length)];
-        document.getElementById('key').textContent = randomKey;
-
-        // Save selected key to localStorage
-        localStorage.setItem(storageKey, randomKey);
-
-      } catch (err) {
-        document.getElementById('key').textContent = "Error loading keys.";
-        console.error(err);
-      }
-    })();
+    // Display the saved or new key
+    document.getElementById("key").textContent = savedKey;
   </script>
 </body>
 </html>
