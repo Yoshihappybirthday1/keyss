@@ -1,58 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>View Keys</title>
-<style>
-  body {
-    font-family: monospace, monospace;
-    background: #121212;
-    color: #eee;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    min-height: 100vh;
-    margin: 2rem;
-  }
-  h1 {
-    margin-bottom: 1rem;
-  }
-  #keys {
-    white-space: pre-line;
-    font-size: 1.1rem;
-    background: #333;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    width: 100%;
-    max-width: 600px;
-    user-select: all;
-    overflow-wrap: break-word;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>Random Key Viewer</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #121212;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    #key {
+      font-size: 2rem;
+      font-weight: bold;
+      background: #333;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      user-select: all;
+    }
+  </style>
 </head>
 <body>
-<h1>Available Keys</h1>
-<div id="keys">Loading...</div>
+  <h1>Your Random Key</h1>
+  <div id="key">Loading...</div>
 
-<script>
-  // Base64 encoded keys only (no extra code), no line breaks
-  const base64Keys = "WFFXQUJUTlpLRDgzNzEyTQpMUUZUWUpIR01XWjI0OTgzClpLUEpSTEFNTkI0Mjg3NkQKREFCWFtLVVpRTVRZNjUxOTIKTkhXWktZTUtUQ0pFNDM4NjdHCkdKTExNWVFQQUtCMzgzOTEwClRXWE1HS0RaSk5INDMxNjgKQlpBSE5ZUUxEWDM4MjE5CktNV1JQTFpYVEhPODQzOTcKRlpxV01ZWEtOREw4MjM1MQpVWFRLSkFPQlJNNDcyOTYKTVF6R0hZQlJLTEE4MzkxNApWQ0pNV1BIVEQ3NjIwMwpSTFRBWU1HW1FKOTUwMjgKUFlUWldOUlFYTUExNTg2OQpNV1pMSlRQWEdLUzIwMDk4CkJYWktaWUFKSEdUNzM5NTIKSFdNS1lRSlBCTjg0MjYwCkRaQkpLWExNWVEzODE5NQpUUEpabUJLS0hBUjk0Mjc2Ck5SWktZV0pQVlQzMDU4OQpHUUxXWktCSFlYVDgzMTI3CldYWkpLQkxZVFJNOTI2MDMKWUtaVFdYSEpNQkE0NTEyOQpMWlhQWU1SVEdLSjgwMzQyCk1HV1pLVFhSUVJZOTQyODUKUVpLWU1KQkFMWFR3NTgzMApKWE1UVWlaTFFLSDI0OTc2ClpRWVdKUFhLUlE1ODAxMwoKVEtRV1pZR0hNQjMwMTQ5CktaTFBYVFJKV001MDgyNwpYWktaV1BNVFJZMTMxMzk0Ck1KWEpSWlBUR1lIODQyNzAKClRLUFlEWVJKV0IxNzAxNgpMV0JWUFlKS1hSVDQ5MjMwCllXTVpSWFBUV0o4MTQ5NQpQV1pNWVhKVEtCSjkyMzYwCk1ZVEtKUFpYV1JCNjA5NDIKClpXWVBSSFRYS01CSjM1MTc4CkhSWWJaTVdKS1RQOTg0MTMKClRQS1dSTUJZWFo3NDI5MApQTVdUWktYQlJZMTgzNjQKWVpQS01CV1RLUlh5NzAyMQpLWU1aUlRQV1hCNjA0MDMKCldCSk1YWlJZUFBLNzIxODYKClFLSlRXWk1QWVJCOTkwNDgKVFprV1lUTUJKUjg5NTMxCk1USktYUlBXXFpZMjQwNjcKClBLSVpZTltCUlRYMzA4OTUKClpNWFJZVEtQV0JKMTY3NDIKClRNV1BYWktZSlI5NTA4MwoKV1pUSlBSTVlaS0IzMDI2NApZTVpSVEtYSkJKUDg3MTA5CgpVWUtQTVJUTVhQUjYzMDQyClRQTU1YQllSWkpXOTg0MDEKCltaUlBNWVdKQlRYODIzNDcKCldCS1BYWlRZTlJYNzYyMDgKClJZV1hLS1RQWkJNOTE1MzQKClpKS1hQWVdNVEJMMjA5NjcKClhKVFdQQllSTUpLNTM2NDAKCllQUlpLTE1YVFdYQlQ4NzEzMg==";
+  <script>
+    async function fetchAndDecodeKeys() {
+      try {
+        const response = await fetch('keys.txt');
+        const text = await response.text();
+        const lines = text.trim().split('\n');
 
-  try {
-    // Decode base64 string to normal text
-    const decodedKeysText = atob(base64Keys);
+        // Filter out invalid lines
+        const base64Lines = lines.filter(line =>
+          /^[A-Za-z0-9+/=]+$/.test(line) && line.length % 4 === 0
+        );
 
-    // Split keys by new line into array
-    const keysArray = decodedKeysText.trim().split('\n');
+        if (base64Lines.length === 0) throw new Error("No valid keys found.");
 
-    // Join keys with newline for display
-    document.getElementById('keys').textContent = keysArray.join('\n');
-  } catch (e) {
-    document.getElementById('keys').textContent = "Error decoding keys.";
-    console.error("Decoding error:", e);
-  }
-</script>
+        const decodedKeys = base64Lines.map(line => {
+          try {
+            return atob(line);
+          } catch (err) {
+            return null;
+          }
+        }).filter(Boolean);
+
+        const randomKey = decodedKeys[Math.floor(Math.random() * decodedKeys.length)];
+        document.getElementById('key').textContent = randomKey || "No decoded key found.";
+
+      } catch (err) {
+        document.getElementById('key').textContent = "Error decoding keys";
+        console.error(err);
+      }
+    }
+
+    fetchAndDecodeKeys();
+  </script>
 </body>
 </html>
